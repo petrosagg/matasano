@@ -1,4 +1,4 @@
-package main
+package problem1
 
 import (
 	"bytes"
@@ -22,8 +22,8 @@ func getB64Char(c byte) byte {
 	return '*'
 }
 
-func b64Encode(src []byte) string {
-	var buf = make([]byte, (len(src) + 2) / 3 * 4)
+func B64Encode(src []byte) string {
+	var buf = make([]byte, (len(src)+2)/3*4)
 
 	for i := 0; i < len(src)/3; i++ {
 		c1 := (src[i*3] & 0xfc) >> 2
@@ -31,17 +31,16 @@ func b64Encode(src []byte) string {
 		c3 := ((src[i*3+1] & 0x0f) << 2) + ((src[i*3+2] & 0xc0) >> 6)
 		c4 := src[i*3+2] & 0x3f
 
-		buf[i * 4 + 0] = getB64Char(c1)
-		buf[i * 4 + 1] = getB64Char(c2)
-		buf[i * 4 + 2] = getB64Char(c3)
-		buf[i * 4 + 3] = getB64Char(c4)
+		buf[i*4+0] = getB64Char(c1)
+		buf[i*4+1] = getB64Char(c2)
+		buf[i*4+2] = getB64Char(c3)
+		buf[i*4+3] = getB64Char(c4)
 	}
-	fmt.Printf("\n")
 
 	return string(buf)
 }
 
-func hexDecode(hex string) []byte {
+func HexDecode(hex string) []byte {
 	var buff bytes.Buffer
 
 	for i := 0; i < len(hex)/2; i++ {
@@ -62,10 +61,32 @@ func hexDecode(hex string) []byte {
 	return buff.Bytes()
 }
 
-func main() {
+func HexEncode(src []byte) string {
+	hex := make([]byte, len(src)*2)
+
+	for i := 0; i < len(src); i++ {
+		b1 := src[i] & 0xf0 >> 4
+		b2 := src[i] & 0x0f
+
+		hex[i*2] = b1 + '0'
+		hex[i*2+1] = b2 + '0'
+
+		if b1 > 9 {
+			hex[i*2] = src[i]&0x0f + 'a' - 10
+		}
+
+		if b2 > 9 {
+			hex[i*2+1] = src[i]&0x0f + 'a' - 10
+		}
+	}
+
+	return string(hex)
+}
+
+func Run() {
 	flag.Parse()
 
 	hex := flag.Arg(0)
 
-	fmt.Println(b64Encode(hexDecode(hex)))
+	fmt.Println(B64Encode(HexDecode(hex)))
 }
